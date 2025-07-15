@@ -31,7 +31,7 @@ const AdicionarBobina: React.FC<AdicionarBobinaProps> = ({ onAdicionar }) => {
     e.preventDefault();
     
     const novaBobina: Omit<Bobina, 'id'> = {
-      codigo: formData.cliente, // usando cliente no lugar de codigo
+      codigo: formData.cliente,
       descricao: formData.descricao,
       peso: parseFloat(formData.peso),
       largura: parseFloat(formData.largura),
@@ -39,10 +39,10 @@ const AdicionarBobina: React.FC<AdicionarBobinaProps> = ({ onAdicionar }) => {
       cor: formData.cor,
       material: formData.material,
       quantidade: parseInt(formData.quantidade),
-      localizacao: '', // campo removido do form, mas mantido vazio para compatibilidade
+      localizacao: '',
       prioridade: formData.prioridade,
       dataEntrada: new Date().toISOString().split('T')[0],
-      fornecedor: '', // campo removido do form, mas mantido vazio para compatibilidade
+      fornecedor: '',
       observacoes: formData.observacoes
     };
 
@@ -130,19 +130,7 @@ const AdicionarBobina: React.FC<AdicionarBobinaProps> = ({ onAdicionar }) => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="comprimento" className="text-sm font-medium">Comprimento (m) *</Label>
-                <Input
-                  id="comprimento"
-                  type="number"
-                  value={formData.comprimento}
-                  onChange={(e) => handleChange('comprimento', e.target.value)}
-                  placeholder="500"
-                  required
-                  className="mt-1"
-                />
-              </div>
-
+             
               <div>
                 <Label htmlFor="cor" className="text-sm font-medium">Cor *</Label>
                 <Input
