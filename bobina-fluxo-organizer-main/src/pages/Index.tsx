@@ -1,81 +1,73 @@
-
-import React, { useState } from 'react';
-import { useBobinas } from '../hooks/useBobinas';
-import Dashboard from '../components/Dashboard';
-import AdicionarBobina from '../components/AdicionarBobina';
-import ListaBobinas from '../components/ListaBobinas';
-import EstoquePorPrioridade from '../components/EstoquePorPrioridade';
-import Layout from '../components/Layout';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import AuthPage from "@/components/auth/AuthPage";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import BobinasManager from "@/components/bobinas/BobinasManager";
+import ChatSystem from "@/components/chat/ChatSystem";
 
 const Index = () => {
-  console.log('Index component rendering...');
-  
-  const {
-    bobinas,
-    filtro,
-    setFiltro,
-    adicionarBobina,
-    removerBobina,
-    totalBobinas,
-    totalQuantidade
-  } = useBobinas();
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("bobinas");
 
-  const [activeTab, setActiveTab] = useState('dashboard');
-  
-  console.log('Active tab:', activeTab);
-  console.log('Total bobinas:', totalBobinas);
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
 
-  const handleAdicionarBobina = (novaBobina: any) => {
-    console.log('Adding bobina:', novaBobina);
-    adicionarBobina(novaBobina);
-    toast.success('Bobina adicionada com sucesso!', {
-      description: `${novaBobina.codigo} - ${novaBobina.descricao}`
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
-  };
 
-  const handleRemoverBobina = (id: string) => {
-    const bobina = bobinas.find(b => b.id === id);
-    removerBobina(id);
-    toast.success('Bobina removida do estoque!', {
-      description: bobina ? `${bobina.codigo} foi removida` : 'Bobina removida'
-    });
-  };
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   const renderContent = () => {
-    console.log('Rendering content for tab:', activeTab);
     switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard bobinas={bobinas} />;
-      case 'adicionar':
-        return <AdicionarBobina onAdicionar={handleAdicionarBobina} />;
-      case 'estoque':
-        return <EstoquePorPrioridade bobinas={bobinas} />;
-      case 'listar':
-        return (
-          <ListaBobinas 
-            bobinas={bobinas}
-            filtro={filtro}
-            onFiltroChange={setFiltro}
-            onRemover={handleRemoverBobina}
-          />
-        );
+      case 'bobinas':
+        return <BobinasManager />;
+      case 'chat':
+        return <ChatSystem />;
+      case 'maquinas':
+        return <div className="text-center py-20"><h2 className="text-2xl">Módulo de Máquinas em desenvolvimento</h2></div>;
+      case 'historico':
+        return <div className="text-center py-20"><h2 className="text-2xl">Módulo de Histórico em desenvolvimento</h2></div>;
+      case 'configuracoes':
+        return <div className="text-center py-20"><h2 className="text-2xl">Configurações em desenvolvimento</h2></div>;
       default:
-        return <Dashboard bobinas={bobinas} />;
+        return <BobinasManager />;
     }
   };
 
-  console.log('About to render Layout...');
-
   return (
-    <Layout
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      totalBobinas={totalBobinas}
-      totalQuantidade={totalQuantidade}
-    >
+    <DashboardLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {renderContent()}
-    </Layout>
+    </DashboardLayout>
   );
 };
 

@@ -14,180 +14,380 @@ export type Database = {
   }
   public: {
     Tables: {
-      categories: {
+      bobinas: {
         Row: {
+          codigo: string
+          cor: string
           created_at: string
-          description: string | null
+          data_entrada: string
+          data_para_maquina: string | null
+          data_validade: string | null
+          em_maquina: boolean | null
+          espessura: number
+          fornecedor: string | null
+          foto_url: string | null
           id: string
-          name: string
+          largura: number
+          localizacao: string | null
+          observacoes: string | null
+          peso: number
+          prioridade: Database["public"]["Enums"]["prioridade_type"] | null
+          quantidade_estoque: number
+          quantidade_usada: number | null
+          tipo_plastico: string
           updated_at: string
+          user_id: string
+          usuario_adicionou: string | null
         }
         Insert: {
+          codigo: string
+          cor: string
           created_at?: string
-          description?: string | null
+          data_entrada?: string
+          data_para_maquina?: string | null
+          data_validade?: string | null
+          em_maquina?: boolean | null
+          espessura: number
+          fornecedor?: string | null
+          foto_url?: string | null
           id?: string
-          name: string
+          largura: number
+          localizacao?: string | null
+          observacoes?: string | null
+          peso: number
+          prioridade?: Database["public"]["Enums"]["prioridade_type"] | null
+          quantidade_estoque?: number
+          quantidade_usada?: number | null
+          tipo_plastico: string
           updated_at?: string
+          user_id: string
+          usuario_adicionou?: string | null
         }
         Update: {
+          codigo?: string
+          cor?: string
           created_at?: string
-          description?: string | null
+          data_entrada?: string
+          data_para_maquina?: string | null
+          data_validade?: string | null
+          em_maquina?: boolean | null
+          espessura?: number
+          fornecedor?: string | null
+          foto_url?: string | null
           id?: string
-          name?: string
+          largura?: number
+          localizacao?: string | null
+          observacoes?: string | null
+          peso?: number
+          prioridade?: Database["public"]["Enums"]["prioridade_type"] | null
+          quantidade_estoque?: number
+          quantidade_usada?: number | null
+          tipo_plastico?: string
           updated_at?: string
+          user_id?: string
+          usuario_adicionou?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bobinas_usuario_adicionou_fkey"
+            columns: ["usuario_adicionou"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
-      products: {
+      chat_messages: {
         Row: {
-          barcode: string | null
-          category_id: string | null
+          content: string | null
           created_at: string
-          current_stock: number
-          description: string | null
+          edited_at: string | null
+          file_url: string | null
           id: string
-          minimum_stock: number
-          name: string
-          unit_price: number
+          is_deleted: boolean | null
+          message_type: string | null
+          room_id: string | null
+          sender_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          edited_at?: string | null
+          file_url?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          message_type?: string | null
+          room_id?: string | null
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          edited_at?: string | null
+          file_url?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          message_type?: string | null
+          room_id?: string | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          room_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          room_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          room_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string | null
+          type: string | null
           updated_at: string
         }
         Insert: {
-          barcode?: string | null
-          category_id?: string | null
           created_at?: string
-          current_stock?: number
-          description?: string | null
+          created_by?: string | null
           id?: string
-          minimum_stock?: number
-          name: string
-          unit_price?: number
+          name?: string | null
+          type?: string | null
           updated_at?: string
         }
         Update: {
-          barcode?: string | null
-          category_id?: string | null
           created_at?: string
-          current_stock?: number
-          description?: string | null
+          created_by?: string | null
           id?: string
-          minimum_stock?: number
-          name?: string
-          unit_price?: number
+          name?: string | null
+          type?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "products_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "chat_rooms_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "categories"
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      historico_bobinas: {
+        Row: {
+          bobina_id: string | null
+          data_uso: string
+          id: string
+          maquina_id: string | null
+          observacoes: string | null
+          operador: string | null
+          quantidade_usada: number
+        }
+        Insert: {
+          bobina_id?: string | null
+          data_uso?: string
+          id?: string
+          maquina_id?: string | null
+          observacoes?: string | null
+          operador?: string | null
+          quantidade_usada: number
+        }
+        Update: {
+          bobina_id?: string | null
+          data_uso?: string
+          id?: string
+          maquina_id?: string | null
+          observacoes?: string | null
+          operador?: string | null
+          quantidade_usada?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_bobinas_bobina_id_fkey"
+            columns: ["bobina_id"]
+            isOneToOne: false
+            referencedRelation: "bobinas"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_bobinas_maquina_id_fkey"
+            columns: ["maquina_id"]
+            isOneToOne: false
+            referencedRelation: "maquinas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_bobinas_operador_fkey"
+            columns: ["operador"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      maquinas: {
+        Row: {
+          ativa: boolean | null
+          bobina_atual: string | null
+          created_at: string
+          id: string
+          nome: string
+          operador: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativa?: boolean | null
+          bobina_atual?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          operador?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativa?: boolean | null
+          bobina_atual?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          operador?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maquinas_bobina_atual_fkey"
+            columns: ["bobina_atual"]
+            isOneToOne: false
+            referencedRelation: "bobinas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maquinas_operador_fkey"
+            columns: ["operador"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
-          email: string
-          full_name: string
+          full_name: string | null
           id: string
-          role: Database["public"]["Enums"]["user_role"]
-          status: Database["public"]["Enums"]["approval_status"]
+          role: string | null
+          status: string | null
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
-          email: string
-          full_name: string
+          full_name?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          status?: Database["public"]["Enums"]["approval_status"]
+          role?: string | null
+          status?: string | null
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
-          email?: string
-          full_name?: string
+          full_name?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          status?: Database["public"]["Enums"]["approval_status"]
+          role?: string | null
+          status?: string | null
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: []
       }
-      sige: {
+      stickers: {
         Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
-      }
-      stock_movements: {
-        Row: {
+          category: string | null
           created_at: string
           id: string
-          movement_type: string
-          product_id: string
-          quantity: number
-          reason: string | null
-          user_id: string
+          name: string
+          url: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           id?: string
-          movement_type: string
-          product_id: string
-          quantity: number
-          reason?: string | null
-          user_id: string
+          name: string
+          url: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           id?: string
-          movement_type?: string
-          product_id?: string
-          quantity?: number
-          reason?: string | null
-          user_id?: string
+          name?: string
+          url?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "stock_movements_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      get_user_role: {
-        Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      get_user_status: {
-        Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["approval_status"]
+      create_default_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {
-      approval_status: "pending" | "approved" | "rejected"
-      user_role: "admin" | "user"
+      prioridade_type: "alta" | "media" | "baixa"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -315,8 +515,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      approval_status: ["pending", "approved", "rejected"],
-      user_role: ["admin", "user"],
+      prioridade_type: ["alta", "media", "baixa"],
     },
   },
 } as const
